@@ -20,3 +20,27 @@ export const pool = new Pool({
     rejectUnauthorized: false
   }
 });
+
+export const initDb = async () => {
+    try {
+        await pool.query(`
+            CREATE TABLE IF NOT EXISTS users (
+                id SERIAL PRIMARY KEY,
+                username VARCHAR(255) UNIQUE NOT NULL
+            );
+        `);
+        
+        await pool.query(`
+            CREATE TABLE IF NOT EXISTS files (
+                id SERIAL PRIMARY KEY,
+                username VARCHAR(255) NOT NULL,
+                file_url TEXT NOT NULL,
+                file_type VARCHAR(50) NOT NULL,
+                size BIGINT NOT NULL
+            );
+        `);
+        console.log("Database tables initialized successfully");
+    } catch (error) {
+        console.error("Error initializing database tables:", error);
+    }
+};

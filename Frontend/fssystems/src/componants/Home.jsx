@@ -5,7 +5,7 @@ function Home() {
     const [users, setUsers] = useState([]);
 
     useEffect(() => {
-        fetch(`${import.meta.env.VITE_BACKEND_URL}/api/users`)
+        fetch(`${import.meta.env.VITE_BACKEND_URL}/api/users?t=${new Date().getTime()}`)
             .then(res => res.json())
             .then(data => {
                 console.log("DATA:", data);

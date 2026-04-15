@@ -21,7 +21,7 @@ export default function Upload() {
 
     setLoading(true);
     const formData = new FormData();
-    formData.append("username", username);
+    formData.append("username", username.trim());
 
     for (let f of files) {
       formData.append("files", f);
