@@ -7,7 +7,7 @@ export default function Files() {
   const [data, setData] = useState({ files: [], size: 0 });
 
   useEffect(() => {
-    fetch(`http://localhost:1312/api/files/${username}/${type}`)
+    fetch(`${process.env.BACKEND_URL}/api/files/${username}/${type}`)
       .then(res => res.json())
       .then(setData);
   }, [username, type]);
@@ -15,7 +15,7 @@ export default function Files() {
     if (!window.confirm("Are you sure you want to delete this file permanently?")) return;
 
     try {
-      const res = await fetch(`http://localhost:1312/api/files/${id}`, {
+      const res = await fetch(`${process.env.BACKEND_URL}/api/files/${id}`, {
         method: 'DELETE'
       });
       if (res.ok) {
@@ -39,7 +39,7 @@ export default function Files() {
         <h2>{username} / {type.charAt(0).toUpperCase() + type.slice(1)}</h2>
         <Link to={`/user/${username}`} className="btn btn-outline">&larr; Back Support</Link>
       </div>
-      
+
       <div className="storage-bar-container">
         <p><strong>Storage Used Here:</strong> {(data.size / 1024 / 1024).toFixed(2)} MB</p>
       </div>
@@ -48,9 +48,9 @@ export default function Files() {
         {data.files.length > 0 ? data.files.map(f => {
           const filename = f.file_url.split(/[\\/]/).pop();
           const isCloudinary = f.file_url.startsWith('http');
-          const fileUrl = isCloudinary 
-            ? f.file_url 
-            : `http://localhost:1312/${f.file_url.replace(/\\/g, '/')}`;
+          const fileUrl = isCloudinary
+            ? f.file_url
+            : `${process.env.BACKEND_URL}/${f.file_url.replace(/\\/g, '/')}`;
 
           return (
             <div key={f.id} className="file-item">
