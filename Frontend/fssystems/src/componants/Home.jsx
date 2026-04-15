@@ -5,7 +5,7 @@ function Home() {
     const [users, setUsers] = useState([]);
 
     useEffect(() => {
-        fetch('http://localhost:1312/api/users')
+        fetch(`${import.meta.env.VITE_BACKEND_URL}/api/users`)
             .then(res => res.json())
             .then(data => {
                 console.log("DATA:", data);
@@ -13,7 +13,7 @@ function Home() {
             })
             .catch(err => console.log("ERROR:", err));
     }, []);
-
+    console.log('backend url is :', import.meta.env.VITE_BACKEND_URL)
     return (
         <div className="container">
             <div className="header-actions">
@@ -23,11 +23,11 @@ function Home() {
                     Upload New
                 </Link>
             </div>
-            
+
             <div className="folder-grid">
                 {users.map((u) => (
-                    <Link to={`/user/${u.username}`} key={u.id} className="folder-card">
-                        <div className="folder-icon" style={{color: 'var(--folder-color)'}}>📁</div>
+                    <Link to={`/user/${u.username}`} key={u.username} className="folder-card">
+                        <div className="folder-icon" style={{ color: 'var(--folder-color)' }}>📁</div>
                         <div className="folder-name">{u.username}</div>
                     </Link>
                 ))}

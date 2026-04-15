@@ -7,7 +7,7 @@ export default function Files() {
   const [data, setData] = useState({ files: [], size: 0 });
 
   useEffect(() => {
-    fetch(`${process.env.BACKEND_URL}/api/files/${username}/${type}`)
+    fetch(`${import.meta.env.VITE_BACKEND_URL}/api/files/${username}/${type}`)
       .then(res => res.json())
       .then(setData);
   }, [username, type]);
@@ -15,7 +15,7 @@ export default function Files() {
     if (!window.confirm("Are you sure you want to delete this file permanently?")) return;
 
     try {
-      const res = await fetch(`${process.env.BACKEND_URL}/api/files/${id}`, {
+      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/files/${id}`, {
         method: 'DELETE'
       });
       if (res.ok) {
@@ -50,7 +50,7 @@ export default function Files() {
           const isCloudinary = f.file_url.startsWith('http');
           const fileUrl = isCloudinary
             ? f.file_url
-            : `${process.env.BACKEND_URL}/${f.file_url.replace(/\\/g, '/')}`;
+            : `${import.meta.env.VITE_BACKEND_URL}/${f.file_url.replace(/\\/g, '/')}`;
 
           return (
             <div key={f.id} className="file-item">

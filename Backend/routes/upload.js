@@ -8,45 +8,57 @@ const router = express.Router();
 
 //upload time run this
 router.post('/upload', upload.array('files'), async (req, res) => {
-    const { username } = req.body;
+    try {
+        const { username } = req.body;
 
-    await pool.query(
-        'INSERT INTO users (username) VALUES ($1) ON CONFLICT DO NOTHING', [username]
-    );
-
-    for (let file of req.files) {
-        let type = 'files';
-        if (file.mimetype.startsWith('image')) type = 'images';
-        else if (file.mimetype.startsWith('video')) type = 'videos';
-
-        let fileUrlToSave = file.path; // Default to local path
-
-        // If it's an image or video, upload to Cloudinary
-        if (type === 'images' || type === 'videos') {
-            try {
-                // Upload local file to Cloudinary under the user's folder
-                // resource_type: 'auto' handles images, videos, and raw files
-                const result = await cloudinary.uploader.upload(file.path, {
-                    folder: `filesystem2/${username}`,
-                    resource_type: 'auto'
-                });
-                
-                // Use the secure Cloudinary URL instead of the local path
-                fileUrlToSave = result.secure_url;
-            } catch (error) {
-                console.error("Cloudinary upload error:", error);
-                // Fallback to local path if Cloudinary fails or is not configured properly
-                fileUrlToSave = file.path;
-            }
+        if (!username) {
+            return res.status(400).json({ message: 'Username is required' });
         }
 
+        // Ensure user exists in the users table
+        // Specifying (username) as the conflict target
         await pool.query(
-            'INSERT INTO files (username,file_url,file_type,size) VALUES ($1,$2,$3,$4)', 
-            [username, fileUrlToSave, type, file.size]
+            'INSERT INTO users (username) VALUES ($1) ON CONFLICT (username) DO NOTHING', [username]
         );
-    }
-    res.json({ message: 'uploaded' })
 
+        const uploadResults = [];
+
+        for (let file of req.files) {
+            let type = 'files';
+            if (file.mimetype.startsWith('image')) type = 'images';
+            else if (file.mimetype.startsWith('video')) type = 'videos';
+
+            let fileUrlToSave = file.path; // Default to local path
+
+            // If it's an image or video, upload to Cloudinary
+            if (type === 'images' || type === 'videos') {
+                try {
+                    // Upload local file to Cloudinary under the user's folder
+                    const result = await cloudinary.uploader.upload(file.path, {
+                        folder: `filesystem2/${username}`,
+                        resource_type: 'auto'
+                    });
+                    
+                    // Use the secure Cloudinary URL instead of the local path
+                    fileUrlToSave = result.secure_url;
+                } catch (error) {
+                    console.error("Cloudinary upload error:", error);
+                    // Fallback to local path already set
+                }
+            }
+
+            await pool.query(
+                'INSERT INTO files (username,file_url,file_type,size) VALUES ($1,$2,$3,$4)', 
+                [username, fileUrlToSave, type, file.size]
+            );
+            uploadResults.push({ name: file.originalname, status: 'success' });
+        }
+        
+        res.json({ message: 'uploaded', details: uploadResults });
+    } catch (error) {
+        console.error("Upload route error:", error);
+        res.status(500).json({ message: 'Internal server error during upload', error: error.message });
+    }
 })
 
 

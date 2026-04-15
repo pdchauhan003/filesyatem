@@ -5,10 +5,8 @@ import Home from './componants/Home'
 import Files from './componants/Files';
 import UserFolders from './componants/UserFolder';
 import Upload from './componants/Upload';
-import dotenv from "dotenv";
-dotenv.config();
-function App() {
 
+function App() {
   return (
     <>
       <BrowserRouter>

@@ -6,7 +6,7 @@ function StorageBar({ username }) {
     const MAX = 5 * 1024 * 1024 * 1024; // 5GB
 
     const fetchStorage = async () => {
-        const res = await fetch(`http://localhost:1312/api/storage/${username}`);
+        const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/storage/${username}`);
         const data = await res.json();
         setUsed(data.totalBytes);
     };
@@ -14,7 +14,7 @@ function StorageBar({ username }) {
     useEffect(() => {
         fetchStorage();
 
-        // 🔥 auto refresh every 3 sec
+        //refresh every 3 sec
         const interval = setInterval(fetchStorage, 3000);
 
         return () => clearInterval(interval);
@@ -31,7 +31,7 @@ function StorageBar({ username }) {
     return (
         <div style={{ width: "300px" }}>
             <p>
-                {format(used)} / 5 GB
+                {format(used)} / 5 GB    {/* 5gb is fixed for now */}
             </p>
 
             <div style={{

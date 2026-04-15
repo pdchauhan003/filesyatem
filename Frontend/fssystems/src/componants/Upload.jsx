@@ -26,9 +26,9 @@ export default function Upload() {
     for (let f of files) {
       formData.append("files", f);
     }
-    
+
     try {
-      await fetch("http://localhost:1312/api/upload", {
+      await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/upload`, {
         method: "POST",
         body: formData,
       });
@@ -53,35 +53,35 @@ export default function Upload() {
 
       <div className="upload-card">
         <h2 style={{ textAlign: "center", marginBottom: "2rem" }}>Upload Files</h2>
-        
+
         <form onSubmit={handleSubmit}>
           <div className="form-group">
             <label htmlFor="username">Username (Required)</label>
-            <input 
+            <input
               id="username"
               className="form-input"
-              placeholder="Enter username for folder" 
+              placeholder="Enter username for folder"
               value={username}
-              onChange={e => setUsername(e.target.value)} 
+              onChange={e => setUsername(e.target.value)}
               required
             />
           </div>
-          
+
           <div className="form-group">
             <label htmlFor="files">Select Files (Images or Videos)</label>
-            <input 
+            <input
               id="files"
-              type="file" 
-              className="form-input" 
-              multiple 
-              onChange={e => setFiles(e.target.files)} 
+              type="file"
+              className="form-input"
+              multiple
+              onChange={e => setFiles(e.target.files)}
               required
             />
           </div>
-          
-          <button 
-            type="submit" 
-            className="btn btn-primary" 
+
+          <button
+            type="submit"
+            className="btn btn-primary"
             style={{ width: "100%", marginTop: "1rem" }}
             disabled={loading}
           >
