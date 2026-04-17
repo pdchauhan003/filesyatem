@@ -7,10 +7,8 @@ const storage=multer.diskStorage({
         let type='files';
         if(file.mimetype.startsWith('video')) type='videos';
         else if(file.mimetype.startsWith('image')) type='images';
-
         const dir=`uploads/${username}/${type}`;
         fs.mkdirSync(dir,{recursive:true});
-
         cb(null,dir);
 
     },

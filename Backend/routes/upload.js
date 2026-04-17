@@ -15,8 +15,8 @@ router.post('/upload', upload.array('files'), async (req, res) => {
             return res.status(400).json({ message: 'Username is required' });
         }
 
-        // Ensure user exists in the users table
-        // Specifying (username) as the conflict target
+      
+        // Specifying username as the target
         await pool.query(
             'INSERT INTO users (username) VALUES ($1) ON CONFLICT (username) DO NOTHING', [username]
         );
@@ -114,7 +114,7 @@ router.delete('/files/:id', async (req, res) => {
     const { id } = req.params;
 
     try {
-        // 1. Get file info from DB
+        // file info from DB
         const result = await pool.query('SELECT * FROM files WHERE id = $1', [id]);
         if (result.rows.length === 0) {
             return res.status(404).json({ message: 'File not found' });
@@ -123,21 +123,21 @@ router.delete('/files/:id', async (req, res) => {
         const file = result.rows[0];
         const isCloudinary = file.file_url.startsWith('http');
 
-        // 2. Delete from storage
+        //Delete from storage
         if (isCloudinary) {
             // Extract public_id from URL
             const parts = file.file_url.split('/');
             const filenameWithExt = parts.pop();
             const publicIdWithoutExt = filenameWithExt.split('.')[0];
             
-            // Reconstruct public_id including folder (filesystem2/username/filename)
+        
             const uploadIndex = parts.indexOf('upload');
             let folderParts = parts.slice(uploadIndex + 1);
             if (folderParts[0].startsWith('v')) folderParts = folderParts.slice(1);
             
             const publicId = [...folderParts, publicIdWithoutExt].join('/');
 
-            // Resource type needed for videos
+           
             const resourceType = file.file_type === 'images' ? 'image' : (file.file_type === 'videos' ? 'video' : 'raw');
             
             await cloudinary.uploader.destroy(publicId, { resource_type: resourceType });
@@ -148,7 +148,7 @@ router.delete('/files/:id', async (req, res) => {
             }
         }
 
-        // 3. Delete from DB
+        // Delete from DB
         await pool.query('DELETE FROM files WHERE id = $1', [id]);
 
         res.json({ message: 'Deleted successfully' });

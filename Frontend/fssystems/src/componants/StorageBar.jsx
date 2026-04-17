@@ -12,6 +12,7 @@ function StorageBar({ username }) {
     };
 
     useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         fetchStorage();
 
         //refresh every 3 sec

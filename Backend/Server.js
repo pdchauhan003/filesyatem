@@ -9,9 +9,10 @@ app.use(cors());
 app.use(express.json());
 
 app.use('/uploads', express.static('uploads')),
-    app.use('/api', uploadRoutes)
+app.use('/api', uploadRoutes)
 
 
+// create db table if not create otherwise run server
 initDb().then(() => {
     app.listen(1312, () => {
         console.log('server run in 1312 port');
